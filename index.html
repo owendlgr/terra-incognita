@@ -206,8 +206,8 @@ body{
   color: var(--paper) !important;
   background: var(--ink) !important;
 }
-[data-theme="dark"] .sticky-topics a:hover,
-[data-theme="dark"] .sticky-topics a.active {
+html[data-theme="dark"] .sticky-topics a:hover,
+html[data-theme="dark"] .sticky-topics a.active {
   color: #161614 !important;
   background: #faf9f7 !important;
 }
@@ -413,8 +413,8 @@ body{
   background: var(--ink) !important;
   border-color: var(--ink) !important;
 }
-[data-theme="dark"] .section-topic-nav a:hover,
-[data-theme="dark"] .section-topic-nav a.active {
+html[data-theme="dark"] .section-topic-nav a:hover,
+html[data-theme="dark"] .section-topic-nav a.active {
   color: #161614 !important;
   background: #faf9f7 !important;
   border-color: #faf9f7 !important;
@@ -1234,16 +1234,16 @@ footer a:hover{color:var(--green-mid);}
   <div class="hero-wrap">
     <div class="hero">
       <div class="hero-main">
-        <div class="hero-kicker">Featured Story</div>
-        <h2 class="hero-headline">Your headline goes here — <em>make it count</em></h2>
-        <p class="hero-dek">Your lede goes here. 2–3 sentences that pull the reader in and make them want to click through to the full piece.</p>
+        <div class="hero-kicker" id="hero-kicker">Featured Story</div>
+        <h2 class="hero-headline" id="hero-headline">Your headline goes here — <em>make it count</em></h2>
+        <p class="hero-dek" id="hero-dek">Your lede goes here. 2–3 sentences that pull the reader in and make them want to click through to the full piece.</p>
         <div class="hero-meta">
           <span class="byline">By Isaac Dellinger</span>
-          <span class="dot">·</span><span>Date</span>
-          <span class="dot">·</span><span>— min read</span>
+          <span class="dot">·</span><span id="hero-date">Date</span>
+          <span class="dot">·</span><span id="hero-read-time">— min read</span>
         </div>
-        <div class="hero-tags"><span class="tag" onclick="showPage('world')">World</span></div>
-        <button class="read-btn" onclick="showPage('article')">Read the Story</button>
+        <div class="hero-tags" id="hero-tags"><span class="tag" onclick="showPage('world')">World</span></div>
+        <button class="read-btn" id="hero-btn" onclick="showPage('article')">Read the Story</button>
       </div>
       <div class="hero-image-block">
         <div class="img-ph tall"><span class="ph-label">Photo / Image<br>Upload here</span></div>
@@ -1258,7 +1258,7 @@ footer a:hover{color:var(--green-mid);}
       <span class="section-rule"></span>
       <span class="section-count" id="home-date"></span>
     </div>
-    <main class="article-grid">
+    <main class="article-grid" id="article-grid">
       <article class="article-card featured" onclick="showPage('article')">
         <button class="save-btn" onclick="event.stopPropagation();toggleSave(this)">♡</button>
         <div class="card-img img-ph cinema"><span class="ph-label">Photo / Image</span></div>
@@ -1362,7 +1362,7 @@ document.addEventListener('DOMContentLoaded',()=>{
         <p class="topic-desc">${t.desc}</p>
       </div>
       <div class="grid-wrap" style="margin-top:1.4rem;">
-        <div class="article-grid">
+        <div class="article-grid" id="grid-${t.id}">
           <article class="article-card featured" onclick="showPage('article')">
             <button class="save-btn" onclick="event.stopPropagation();toggleSave(this)">♡</button>
             <div class="card-img img-ph cinema"><span class="ph-label">Photo / Image</span></div>
@@ -2208,5 +2208,192 @@ const ro=new IntersectionObserver(entries=>{
 },{threshold:.07});
 document.querySelectorAll('.article-card').forEach(c=>ro.observe(c));
 </script>
+
+<script>
+/* ═══════════════════════════════════════════
+   GITHUB CONTENT FETCHER
+   Reads Markdown files from content/articles/
+   and renders them into the article grid
+═══════════════════════════════════════════ */
+
+const GITHUB_OWNER = 'owendlgr';
+const GITHUB_REPO  = 'terra-incognita';
+const GITHUB_API   = 'https://api.github.com';
+
+// Parse frontmatter from Markdown files
+function parseFrontmatter(text) {
+  const match = text.match(/^---\n([\s\S]*?)\n---/);
+  if (!match) return { body: text, data: {} };
+  const data = {};
+  match[1].split('\n').forEach(line => {
+    const [key, ...vals] = line.split(':');
+    if (key && vals.length) {
+      let val = vals.join(':').trim().replace(/^["']|["']$/g, '');
+      if (val === 'true') val = true;
+      if (val === 'false') val = false;
+      data[key.trim()] = val;
+    }
+  });
+  return { data, body: text.slice(match[0].length).trim() };
+}
+
+// Format date nicely
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+// Topic label map
+const TOPIC_LABELS = {
+  world: 'World', middleeast: 'Middle East', america: 'America',
+  europe: 'Europe', travel: 'Travel', tech: 'Tech'
+};
+
+// Build an article card element
+function buildCard(article, featured = false) {
+  const card = document.createElement('article');
+  card.className = 'article-card' + (featured ? ' featured' : '');
+  card.style.cursor = 'pointer';
+
+  const imgHtml = article.cover_image
+    ? `<img src="${article.cover_image}" alt="${article.title}" class="card-img" style="width:100%;height:100%;object-fit:cover;">`
+    : `<div class="card-img img-ph ${featured ? 'cinema' : 'wide'}"><span class="ph-label">Photo / Image</span></div>`;
+
+  const topic = article.topic || '';
+  const tagHtml = topic
+    ? `<span class="tag" onclick="event.stopPropagation();showPage('${topic}')">${TOPIC_LABELS[topic] || topic}</span>`
+    : '';
+
+  card.innerHTML = `
+    <button class="save-btn" onclick="event.stopPropagation();toggleSave(this)">♡</button>
+    ${imgHtml}
+    <span class="card-kicker">${article.kicker || TOPIC_LABELS[topic] || 'Opinion'}</span>
+    <h3 class="card-title">${article.title || 'Untitled'}</h3>
+    <p class="card-excerpt">${article.excerpt || ''}</p>
+    <div class="card-tags">${tagHtml}</div>
+    <div class="card-meta">
+      <span>By Isaac Dellinger</span>
+      <span>${article.read_time ? article.read_time + ' min read' : ''}</span>
+    </div>
+  `;
+
+  card.addEventListener('click', () => {
+    // Store current article for the article reader page
+    window.currentArticle = article;
+    renderArticlePage(article);
+    showPage('article');
+  });
+
+  return card;
+}
+
+// Render the article reading page
+function renderArticlePage(article) {
+  const titleEl   = document.getElementById('article-title');
+  const bodyEl    = document.getElementById('article-body');
+  const kickerEl  = document.querySelector('.article-kicker');
+  const coverEl   = document.querySelector('.article-cover');
+
+  if (titleEl)  titleEl.textContent  = article.title || '';
+  if (kickerEl) kickerEl.textContent = article.kicker || TOPIC_LABELS[article.topic] || '';
+  if (bodyEl) {
+    // Simple Markdown to HTML conversion
+    let html = article.body || '';
+    html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+    html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+    html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
+    html = html.replace(/\n\n/g, '</p><p>');
+    bodyEl.innerHTML = '<p>' + html + '</p>';
+  }
+}
+
+// Fetch all articles from GitHub
+async function fetchArticles() {
+  try {
+    const res = await fetch(
+      `${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/content/articles`,
+      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+    );
+
+    if (!res.ok) return;
+    const files = await res.json();
+    if (!Array.isArray(files)) return;
+
+    // Fetch each article file
+    const articles = await Promise.all(
+      files
+        .filter(f => f.name.endsWith('.md'))
+        .map(async f => {
+          const r = await fetch(f.download_url);
+          const text = await r.text();
+          const { data, body } = parseFrontmatter(text);
+          return { ...data, body, slug: f.name.replace('.md', '') };
+        })
+    );
+
+    // Sort by date — newest first
+    articles.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    if (!articles.length) return;
+
+    // ── Populate hero with featured or latest article ──
+    const featured = articles.find(a => a.featured) || articles[0];
+    const heroKicker = document.getElementById('hero-kicker');
+    const heroHeadline = document.getElementById('hero-headline');
+    const heroDek = document.getElementById('hero-dek');
+    const heroDate = document.getElementById('hero-date');
+    const heroTags = document.getElementById('hero-tags');
+    const heroBtn = document.getElementById('hero-btn');
+
+    if (heroKicker)   heroKicker.textContent  = featured.kicker || TOPIC_LABELS[featured.topic] || 'Featured Story';
+    if (heroHeadline) heroHeadline.textContent = featured.title  || '';
+    if (heroDek)      heroDek.textContent      = featured.excerpt || '';
+    if (heroDate)     heroDate.textContent     = formatDate(featured.date);
+    if (heroTags && featured.topic) {
+      heroTags.innerHTML = `<span class="tag" onclick="showPage('${featured.topic}')">${TOPIC_LABELS[featured.topic] || featured.topic}</span>`;
+    }
+    if (heroBtn) {
+      heroBtn.onclick = () => {
+        window.currentArticle = featured;
+        renderArticlePage(featured);
+        showPage('article');
+      };
+    }
+
+    // ── Populate article grid ──
+    const grid = document.getElementById('article-grid');
+    if (grid) {
+      grid.innerHTML = '';
+      articles.forEach((article, i) => {
+        grid.appendChild(buildCard(article, i === 0));
+      });
+    }
+
+    // ── Populate topic pages ──
+    const topics = ['world','middleeast','america','europe','travel','tech'];
+    topics.forEach(topic => {
+      const topicGrid = document.getElementById(`grid-${topic}`);
+      if (!topicGrid) return;
+      const topicArticles = articles.filter(a => a.topic === topic);
+      if (!topicArticles.length) return;
+      topicGrid.innerHTML = '';
+      topicArticles.forEach(article => {
+        topicGrid.appendChild(buildCard(article));
+      });
+    });
+
+  } catch(e) {
+    console.log('Content fetch error:', e);
+  }
+}
+
+// Run on load
+fetchArticles();
+</script>
+
 </body>
 </html>
