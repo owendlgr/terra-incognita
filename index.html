@@ -1407,21 +1407,21 @@ document.addEventListener('DOMContentLoaded',()=>{
 <div id="page-article" class="page">
   <div class="article-reading">
     <button class="article-back" onclick="showPage('home')">Back to Terra Incognita</button>
-    <div class="article-kicker">Category &nbsp;·&nbsp; <span class="tag">World</span> &nbsp;<span class="tag">Opinion</span></div>
-    <h1 class="article-headline">Your Article Headline Goes Here — <em>Use Italics for Emphasis</em></h1>
-    <p class="article-dek">Your dek / subheadline goes here. One or two compelling sentences that expand on the headline and draw the reader into the piece.</p>
+    <div class="article-kicker" id="article-kicker">Category</div>
+    <h1 class="article-headline" id="article-title">Your Article Headline Goes Here</h1>
+    <p class="article-dek" id="article-dek">Your dek goes here.</p>
     <div class="article-meta-row">
       <span class="byline">By Isaac Dellinger</span>
       <span class="dot">·</span>
       <span id="article-date"></span>
       <span class="dot">·</span>
-      <span>— min read</span>
+      <span id="article-read-time">— min read</span>
     </div>
-    <div class="article-lead-img">
+    <div class="article-lead-img" id="article-lead-img">
       <div class="img-ph" style="aspect-ratio:16/9;width:100%;"><span class="ph-label">Lead Photo / Image — Upload here</span></div>
     </div>
-    <p class="article-photo-caption">Photo caption and credit goes here. Describe what is shown and who took it.</p>
-    <div class="article-body">
+    <p class="article-photo-caption" id="article-photo-caption">Photo caption and credit goes here.</p>
+    <div class="article-body" id="article-body">
       <p class="bio-placeholder">Your article body begins here. Write your opening paragraph — this is the most important paragraph. Hook the reader immediately and don't let go.</p>
       <p class="bio-placeholder">Continue with your second paragraph. Expand on your opening, introduce context, or bring in a key source or observation that anchors the piece.</p>
       <h3>Section Subheading</h3>
@@ -1435,34 +1435,14 @@ document.addEventListener('DOMContentLoaded',()=>{
       <p class="bio-placeholder">Continue with body text after the in-body image. You can add as many photo blocks as the story requires by duplicating the block above.</p>
       <p class="bio-placeholder">Your closing paragraph. Bring the piece home — return to the opening image or question, deliver a final thought, or let a source have the last word. End with intention.</p>
     </div>
-    <div class="article-tags-row">
-      <span class="tag" onclick="showPage('world')">World</span>
-      <span class="tag">Opinion</span>
-      <span class="tag">Photojournalism</span>
-    </div>
+    <div class="article-tags-row" id="article-tags-row"></div>
     <div class="article-actions">
       <button class="action-btn" id="article-save-btn" onclick="toggleArticleSave()">♡ &nbsp;Save</button>
       <button class="action-btn" onclick="copyLink()">⎘ &nbsp;Copy Link</button>
     </div>
     <div class="related-section">
       <h3>More from Terra Incognita</h3>
-      <div class="related-grid">
-        <div class="related-card" onclick="showPage('article')">
-          <div class="card-img img-ph wide" style="margin-bottom:.6rem;"><span class="ph-label">Image</span></div>
-          <div class="card-kicker">Category</div>
-          <h4>Related article headline goes here</h4>
-        </div>
-        <div class="related-card" onclick="showPage('article')">
-          <div class="card-img img-ph wide" style="margin-bottom:.6rem;"><span class="ph-label">Image</span></div>
-          <div class="card-kicker">Category</div>
-          <h4>Related article headline goes here</h4>
-        </div>
-        <div class="related-card" onclick="showPage('article')">
-          <div class="card-img img-ph wide" style="margin-bottom:.6rem;"><span class="ph-label">Image</span></div>
-          <div class="card-kicker">Category</div>
-          <h4>Related article headline goes here</h4>
-        </div>
-      </div>
+      <div class="related-grid" id="related-grid"></div>
     </div>
   </div>
 </div>
@@ -2288,27 +2268,98 @@ function buildCard(article, featured = false) {
   return card;
 }
 
+// ── Markdown to HTML converter ──
+function mdToHtml(md) {
+  if (!md) return '';
+  let html = md
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/^### (.*$)/gm, '</p><h3>$1</h3><p>')
+    .replace(/^## (.*$)/gm, '</p><h2>$1</h2><p>')
+    .replace(/^# (.*$)/gm, '</p><h1>$1</h1><p>')
+    .replace(/^> (.*$)/gm, '</p><blockquote>$1</blockquote><p>')
+    .replace(/^---$/gm, '</p><hr><p>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>');
+  return '<p>' + html + '</p>';
+}
+
 // Render the article reading page
 function renderArticlePage(article) {
-  const titleEl   = document.getElementById('article-title');
-  const bodyEl    = document.getElementById('article-body');
-  const kickerEl  = document.querySelector('.article-kicker');
-  const coverEl   = document.querySelector('.article-cover');
+  const TOPIC_MAP = {
+    world:'World', middleeast:'Middle East', america:'America',
+    europe:'Europe', travel:'Travel', tech:'Tech'
+  };
 
-  if (titleEl)  titleEl.textContent  = article.title || '';
-  if (kickerEl) kickerEl.textContent = article.kicker || TOPIC_LABELS[article.topic] || '';
-  if (bodyEl) {
-    // Simple Markdown to HTML conversion
-    let html = article.body || '';
-    html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-    html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-    html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    html = html.replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>');
-    html = html.replace(/\n\n/g, '</p><p>');
-    bodyEl.innerHTML = '<p>' + html + '</p>';
+  // Kicker
+  const kickerEl = document.getElementById('article-kicker');
+  if (kickerEl) kickerEl.textContent = article.kicker || TOPIC_MAP[article.topic] || 'Opinion';
+
+  // Title
+  const titleEl = document.getElementById('article-title');
+  if (titleEl) titleEl.textContent = article.title || '';
+
+  // Dek
+  const dekEl = document.getElementById('article-dek');
+  if (dekEl) dekEl.textContent = article.excerpt || '';
+
+  // Date
+  const dateEl = document.getElementById('article-date');
+  if (dateEl) dateEl.textContent = article.date ? new Date(article.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '';
+
+  // Read time
+  const rtEl = document.getElementById('article-read-time');
+  if (rtEl) rtEl.textContent = article.read_time ? article.read_time + ' min read' : '';
+
+  // Lead image
+  const leadImg = document.getElementById('article-lead-img');
+  if (leadImg) {
+    if (article.cover_image) {
+      leadImg.innerHTML = `<img src="${article.cover_image}" alt="${article.title}" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;">`;
+    } else {
+      leadImg.innerHTML = '<div class="img-ph" style="aspect-ratio:16/9;width:100%;"><span class="ph-label">Lead Photo</span></div>';
+    }
   }
+
+  // Caption
+  const capEl = document.getElementById('article-photo-caption');
+  if (capEl) capEl.textContent = article.cover_caption || '';
+
+  // Body
+  const bodyEl = document.getElementById('article-body');
+  if (bodyEl) bodyEl.innerHTML = mdToHtml(article.body || '');
+
+  // Tags row
+  const tagsRow = document.getElementById('article-tags-row');
+  if (tagsRow) {
+    const topic = article.topic;
+    tagsRow.innerHTML = topic
+      ? `<span class="tag" onclick="showPage('${topic}')">${TOPIC_MAP[topic] || topic}</span>`
+      : '';
+  }
+
+  // Related articles
+  const relatedGrid = document.getElementById('related-grid');
+  if (relatedGrid && window._allArticles) {
+    const related = window._allArticles
+      .filter(a => a.slug !== article.slug && a.topic === article.topic)
+      .slice(0, 3);
+    relatedGrid.innerHTML = related.map(a => `
+      <div class="related-card" onclick="window.currentArticle=window._allArticles.find(x=>x.slug==='${a.slug}');renderArticlePage(window.currentArticle);showPage('article');window.scrollTo({top:0,behavior:'smooth'});">
+        ${a.cover_image
+          ? `<img src="${a.cover_image}" alt="${a.title}" class="card-img" style="width:100%;aspect-ratio:3/2;object-fit:cover;margin-bottom:.6rem;">`
+          : `<div class="card-img img-ph wide" style="margin-bottom:.6rem;"><span class="ph-label">Image</span></div>`}
+        <div class="card-kicker">${TOPIC_MAP[a.topic] || ''}</div>
+        <h4>${a.title}</h4>
+      </div>
+    `).join('') || '<p style="color:var(--muted);font-size:.85rem;">No related articles yet.</p>';
+  }
+
+  // Scroll to top
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 // Fetch all articles from GitHub
@@ -2337,6 +2388,7 @@ async function fetchArticles() {
 
     // Sort by date — newest first
     articles.sort((a, b) => new Date(b.date) - new Date(a.date));
+    window._allArticles = articles;
 
     if (!articles.length) return;
 
@@ -2393,6 +2445,67 @@ async function fetchArticles() {
 
 // Run on load
 fetchArticles();
+
+// ── GALLERY FETCHER ──
+async function fetchGallery() {
+  try {
+    const res = await fetch(
+      `${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/content/gallery`,
+      { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+    );
+    if (!res.ok) return;
+    const files = await res.json();
+    if (!Array.isArray(files)) return;
+
+    const photos = await Promise.all(
+      files
+        .filter(f => f.name.endsWith('.md'))
+        .map(async f => {
+          const r = await fetch(f.download_url);
+          const text = await r.text();
+          const { data } = parseFrontmatter(text);
+          return data;
+        })
+    );
+
+    // Sort newest first
+    photos.sort((a, b) => new Date(b.date) - new Date(a.date));
+    window._allPhotos = photos;
+
+    const grid = document.getElementById('gallery-grid');
+    if (!grid || !photos.length) return;
+
+    // Replace placeholder items with real photos
+    grid.innerHTML = photos.map(photo => `
+      <div class="gallery-item"
+           data-tags="${photo.category || 'documentary'}"
+           data-title="${photo.title || ''}"
+           data-caption="${photo.location ? photo.location + ' · ' + (photo.caption || '') : (photo.caption || '')}"
+           onclick="openLightbox(this, 'gallery')">
+        ${photo.photo
+          ? `<img src="${photo.photo}" alt="${photo.title || ''}" style="width:100%;height:100%;object-fit:cover;display:block;">`
+          : `<div class="gallery-ph"><span>Photo coming soon</span></div>`}
+        <div class="gallery-overlay">
+          <div class="gallery-caption">
+            <strong>${photo.title || ''}</strong>
+            ${photo.location || ''} ${photo.caption ? '· ' + photo.caption : ''}
+          </div>
+        </div>
+        <span class="g-tag">${photo.category || 'Documentary'}</span>
+      </div>
+    `).join('');
+
+    // Also sync maps page
+    syncMapsFromGallery();
+
+  } catch(e) {
+    console.log('Gallery fetch error:', e);
+  }
+}
+
+// Run gallery fetch on load
+fetchGallery();
+
 </script>
 
 </body>
