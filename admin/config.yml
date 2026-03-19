@@ -1,8 +1,9 @@
 backend:
-  name: git-gateway
+  name: github
+  repo: owendlgr/terra-incognita
   branch: main
-  identity_url: https://terraincognitatest.netlify.app/.netlify/identity
-  gateway_url: https://terraincognitatest.netlify.app/.netlify/git
+  base_url: https://terra-incognita-sigma.vercel.app
+  auth_endpoint: api/auth
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
