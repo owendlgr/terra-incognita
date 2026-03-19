@@ -1,8 +1,16 @@
 {
-  "rewrites": [
+  "routes": [
     {
-      "source": "/((?!admin).*)",
-      "destination": "/index.html"
+      "src": "/admin/config.yml",
+      "dest": "/admin/config.yml"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/admin/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
