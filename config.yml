@@ -1,9 +1,5 @@
 backend:
-  name: github
-  repo: owendlgr/terra-incognita
-  branch: main
-  base_url: https://terra-incognita-sigma.vercel.app
-  auth_endpoint: api/auth
+  name: test-repo
 
 media_folder: "images/uploads"
 public_folder: "/images/uploads"
