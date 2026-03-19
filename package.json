@@ -1,7 +1,0 @@
-{
-  "name": "terra-incognita",
-  "version": "1.0.0",
-  "dependencies": {
-    "netlify-auth-providers": "^1.0.0"
-  }
-}
