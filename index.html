@@ -2,6 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8"/>
+  <meta name="email-obfuscation" content="off"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Terra Incognita — Isaac Dellinger</title>
   <meta name="description" content="Opinion writing and photojournalism by Isaac Dellinger. Mapping the territory power leaves blank."/>
@@ -2535,6 +2536,6 @@ function sendContactMessage(){
   if(!name||!email||!message){alert('Please fill in all fields.');return;}
   if(!email.includes('@')){alert('Please enter a valid email address.');return;}
   emailjs.send('service_d47i2d8','template_e6ijzmc',{
-    to_name:'Isaac',to_email:'dellingerisaac@gmail.com',
+    to_name:'Isaac',to_email:'dellingerisaac'+'@gmail.com',
     from_name:name,from_email:email,message:message
   }).then(()=>{
