@@ -1438,6 +1438,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     <div class="article-tags-row" id="article-tags-row"></div>
     <div class="article-actions">
       <button class="action-btn" id="article-save-btn" onclick="toggleArticleSave()">♡ &nbsp;Save</button>
+      <button class="action-btn" id="article-like-btn" onclick="toggleArticleLike()">♥ &nbsp;<span id="article-like-count">0</span> Likes</button>
       <button class="action-btn" onclick="copyLink()">⎘ &nbsp;Copy Link</button>
     </div>
     <div class="related-section">
@@ -1457,25 +1458,63 @@ document.addEventListener('DOMContentLoaded',()=>{
       <div>
         <div class="bio-eyebrow">✦ About the Author</div>
         <h1 class="bio-name">Isaac <em>Dellinger</em></h1>
-        <p class="bio-title-line">Journalist · Photographer · Writer</p>
-        <p class="bio-placeholder">Write your opening bio statement here — a 1–2 sentence description of who you are and what drives your work.</p>
-        <div class="bio-contact">
-          <a href="/cdn-cgi/l/email-protection#2a43594b4b496a43445e4f584643444f04444f5d59" class="btn-auth">✉ Email</a>
-          <a href="#" class="btn-auth">Instagram</a>
-          <a href="#" class="btn-auth">X / Twitter</a>
+        <p class="bio-title-line">Journalist · Photographer · Student</p>
+        <p style="font-family:'Libre Baskerville',serif;font-size:.96rem;line-height:1.8;color:var(--muted);margin-top:.8rem;">
+          I grew up in the mountains of North Carolina, and now split my time between Washington D.C. and Cairo, Egypt. I study political science, the Middle East, and journalism — and through Terra Incognita, I document what I find in the places big media doesn't always reach.
+        </p>
+        <div class="bio-contact" style="margin-top:1.2rem;">
+          <a href="mailto:dellingerisaac@gmail.com" class="btn-auth">✉ Email</a>
+          <a href="https://instagram.com/owen.dlgr" target="_blank" class="btn-auth">Instagram</a>
         </div>
       </div>
     </div>
     <div class="bio-body">
       <h3>Background</h3>
-      <p class="bio-placeholder">Write your background here. Where did you grow up, study, or begin your career? Give readers context for who you are and where you come from.</p>
+      <p>I grew up in the Blue Ridge mountains of North Carolina — a place that taught me to pay attention to landscape, community, and the stories that don't travel far. That instinct followed me to Washington D.C., where I study political science and journalism, and to Cairo, where I study the Middle East, Arabic, and the art and architecture of one of the world's oldest cities.</p>
+
       <h3>Work &amp; Focus</h3>
-      <p class="bio-placeholder">Describe the kind of work you do and the topics you're most drawn to. What stories do you believe need to be told? What is your editorial philosophy?</p>
-      <h3>Photojournalism</h3>
-      <p class="bio-placeholder">If photography is central to your practice, describe your approach here. What draws you to documentary photography? How do you approach subjects?</p>
+      <p>Terra Incognita is a Latin phrase meaning "unknown territory" — the blank spaces on old maps where cartographers wrote what they didn't know. That's where I like to go. I cover the personal experience of living abroad and traveling through the lens of people, places, and culture. I'm drawn to the sides of a story that don't make the front page: the texture of daily life in places that are more complex than the headlines suggest.</p>
+
+      <h3>Photography</h3>
+      <p>I approach photography the same way I approach reporting — by getting close, staying patient, and letting the subject lead. I'm interested in documentary work that captures place and people honestly, without imposing a narrative from outside. I also study art and architecture, which shapes how I think about framing, light, and the built environment as a form of storytelling.</p>
+
       <h3>Contact &amp; Tips</h3>
-      <p class="bio-placeholder">Let sources and readers know how to reach you. Include your email, Signal number, or a SecureDrop link. Transparency builds trust with sources.</p>
+      <p>I read everything. If you have a tip, a story lead, a correction, or just want to reach out — email me at <a href="mailto:dellingerisaac@gmail.com" style="color:var(--green);">dellingerisaac@gmail.com</a>. I'm also on Instagram at <a href="https://instagram.com/owen.dlgr" target="_blank" style="color:var(--green);">@owen.dlgr</a>.</p>
     </div>
+
+    <!-- CONTACT FORM -->
+    <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--divider);">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;margin-bottom:1.2rem;">Send a Message</h3>
+      <div id="contact-form">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="contact-name" placeholder="Name"/>
+        </div>
+        <div class="form-group">
+          <label>Your Email</label>
+          <input type="email" id="contact-email" placeholder="email@example.com"/>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="contact-message" rows="5" style="width:100%;padding:.58rem .75rem;font-family:'Libre Baskerville',serif;font-size:.9rem;color:var(--ink);background:var(--paper);border:1.5px solid var(--divider);outline:none;resize:vertical;transition:border-color .18s;" placeholder="Your message..."></textarea>
+        </div>
+        <button class="read-btn" onclick="sendContactMessage()" style="margin-top:.5rem;">Send Message</button>
+        <p id="contact-status" style="display:none;margin-top:.8rem;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);">Message sent — thank you.</p>
+      </div>
+    </div>
+
+    <!-- NEWSLETTER SIGNUP -->
+    <div style="margin-top:2.5rem;padding:2rem;background:var(--hover-bg);border:1px solid var(--divider);">
+      <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--green);margin-bottom:.6rem;">✦ Newsletter</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;margin-bottom:.5rem;">Stay in the territory</h3>
+      <p style="font-size:.9rem;color:var(--muted);line-height:1.7;margin-bottom:1rem;">Get new articles and dispatches from the field delivered to your inbox.</p>
+      <div id="newsletter-wrap" style="display:flex;gap:.6rem;flex-wrap:wrap;">
+        <input type="email" id="newsletter-email" placeholder="Your email address" style="flex:1;min-width:220px;padding:.58rem .75rem;font-family:'Libre Baskerville',serif;font-size:.9rem;color:var(--ink);background:var(--paper);border:1.5px solid var(--divider);outline:none;transition:border-color .18s;"/>
+        <button class="read-btn" onclick="subscribeNewsletter()">Subscribe</button>
+      </div>
+      <p id="newsletter-status" style="display:none;margin-top:.8rem;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);">Subscribed — welcome to Terra Incognita.</p>
+    </div>
+
   </div>
 </div>
 
@@ -1693,6 +1732,9 @@ document.addEventListener('DOMContentLoaded',()=>{
   <div id="lightbox-caption">
     <div id="lightbox-caption-title"></div>
     <div id="lightbox-caption-sub"></div>
+    <button onclick="togglePhotoLike()" id="lightbox-like-btn" style="margin-top:.8rem;background:none;border:1px solid rgba(255,255,255,.3);color:#fff;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;padding:.4rem 1rem;cursor:pointer;transition:background .18s;">
+      ♥ &nbsp;<span id="lightbox-like-count">0</span> Likes
+    </button>
   </div>
   <div id="lightbox-counter"></div>
 </div>
