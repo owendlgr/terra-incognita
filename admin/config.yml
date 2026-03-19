@@ -1,0 +1,36 @@
+backend:
+  name: github
+  repo: owendlgr/terra-incognita
+  branch: main
+
+media_folder: "images/uploads"
+public_folder: "/images/uploads"
+
+collections:
+  - name: "articles"
+    label: "Articles"
+    folder: "content/articles"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Date", name: "date", widget: "datetime"}
+      - {label: "Topic", name: "topic", widget: "select", options: ["world","middleeast","america","europe","travel","tech"]}
+      - {label: "Kicker", name: "kicker", widget: "string", required: false}
+      - {label: "Excerpt", name: "excerpt", widget: "text"}
+      - {label: "Cover Image", name: "cover_image", widget: "image", required: false}
+      - {label: "Body", name: "body", widget: "markdown"}
+      - {label: "Featured", name: "featured", widget: "boolean", default: false}
+
+  - name: "gallery"
+    label: "Gallery Photos"
+    folder: "content/gallery"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "Title", name: "title", widget: "string"}
+      - {label: "Date", name: "date", widget: "datetime"}
+      - {label: "Photo", name: "photo", widget: "image"}
+      - {label: "Caption", name: "caption", widget: "string"}
+      - {label: "Location", name: "location", widget: "string", required: false}
+      - {label: "Category", name: "category", widget: "select", options: ["portrait","documentary","landscape","map","street"]}
