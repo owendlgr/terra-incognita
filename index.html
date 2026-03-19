@@ -2457,8 +2457,18 @@ async function fetchGallery() {
   }catch(e){console.log('Gallery fetch error:',e);}
 }
 
-fetchArticles();
-fetchGallery();
+// Fetch GitHub token from our API then load content
+(async function() {
+  try {
+    const r = await fetch('/api/token');
+    if (r.ok) {
+      const d = await r.json();
+      window._gh_token = d.token || '';
+    }
+  } catch(e) {}
+  fetchArticles();
+  fetchGallery();
+})();
 
 /* ── LIKES ── */
 function getLikes(key){return parseInt(localStorage.getItem('ti-likes-'+key)||'0');}
