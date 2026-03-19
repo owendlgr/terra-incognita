@@ -1,16 +1,9 @@
 {
-  "routes": [
+  "cleanUrls": true,
+  "rewrites": [
     {
-      "src": "/admin/config.yml",
-      "dest": "/admin/config.yml"
-    },
-    {
-      "src": "/admin/(.*)",
-      "dest": "/admin/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/((?!admin|images).*)",
+      "destination": "/index.html"
     }
   ]
 }
