@@ -27,17 +27,35 @@ module.exports = async function handler(req, res) {
     }
   );
 
-  const { access_token, error } = await tokenRes.json();
+  const data = await tokenRes.json();
+  const token = data.access_token;
+  const error = data.error;
 
-  if (error || !access_token) {
-    return res.send(`<script>
-      window.opener.postMessage('authorization:github:error:${JSON.stringify({ error: error || 'No token' })}','*');
-      window.close();
-    </script>`);
+  if (error || !token) {
+    return res.send(`<!DOCTYPE html><html><body><script>
+      (function() {
+        function receiveMessage(e) {
+          console.log('receiveMessage %o', e);
+        }
+        window.addEventListener('message', receiveMessage, false);
+        window.opener.postMessage(
+          'authorization:github:error:' + JSON.stringify({error: '${error || 'No token'}'}),
+          '*'
+        );
+      })()
+    </script></body></html>`);
   }
 
-  res.send(`<script>
-    window.opener.postMessage('authorization:github:success:${JSON.stringify({ token: access_token, provider: 'github' })}','*');
-    window.close();
-  </script>`);
+  return res.send(`<!DOCTYPE html><html><body><script>
+    (function() {
+      function receiveMessage(e) {
+        console.log('receiveMessage %o', e);
+      }
+      window.addEventListener('message', receiveMessage, false);
+      window.opener.postMessage(
+        'authorization:github:success:' + JSON.stringify({token: '${token}', provider: 'github'}),
+        '*'
+      );
+    })()
+  </script></body></html>`);
 }
