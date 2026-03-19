@@ -28,25 +28,19 @@ module.exports = async function handler(req, res) {
   );
 
   const data = await tokenRes.json();
+  const token = data.access_token;
+  const error = data.error;
 
   res.setHeader('Content-Type', 'text/html');
-  res.send(`<!DOCTYPE html><html><body>
-    <p>Token: ${data.access_token ? 'received' : 'missing'}</p>
-    <p>Error: ${data.error || 'none'}</p>
-    <script>
-      var token = ${JSON.stringify(data.access_token)};
-      var error = ${JSON.stringify(data.error)};
+  res.send(`<!DOCTYPE html><html><body><script>
+    (function() {
+      var token = '${token}';
+      var error = '${error || ''}';
       var msg = error
-        ? 'authorization:github:error:' + JSON.stringify({error: error})
-        : 'authorization:github:success:' + JSON.stringify({token: token, provider: 'github'});
-      console.log('opener:', window.opener);
-      console.log('msg:', msg);
-      if (window.opener) {
-        window.opener.postMessage(msg, 'https://terra-incognita-sigma.vercel.app');
-        setTimeout(function() { window.close(); }, 5000);
-      } else {
-        document.body.innerHTML += '<p>ERROR: window.opener is null</p>';
-      }
-    </script>
-  </body></html>`);
+        ? 'authorization:github:error:{"error":"' + error + '"}'
+        : 'authorization:github:success:{"token":"' + token + '","provider":"github"}';
+      window.opener.postMessage(msg, '*');
+      window.close();
+    })();
+  </script></body></html>`);
 }
