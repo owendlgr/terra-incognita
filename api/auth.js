@@ -30,13 +30,19 @@ module.exports = async function handler(req, res) {
   const data = await tokenRes.json();
 
   res.setHeader('Content-Type', 'text/html');
-  res.send(`<!DOCTYPE html><html><body><script>
-    var token = ${JSON.stringify(data.access_token)};
-    var error = ${JSON.stringify(data.error)};
-    var msg = error
-      ? 'authorization:github:error:' + JSON.stringify({error: error})
-      : 'authorization:github:success:' + JSON.stringify({token: token, provider: 'github'});
-    window.opener.postMessage(msg, '*');
-    window.close();
-  </script></body></html>`);
+  res.send(`<!DOCTYPE html><html><body>
+    <p>Token: ${data.access_token ? 'received' : 'missing'}</p>
+    <p>Error: ${data.error || 'none'}</p>
+    <script>
+      var token = ${JSON.stringify(data.access_token)};
+      var error = ${JSON.stringify(data.error)};
+      var msg = error
+        ? 'authorization:github:error:' + JSON.stringify({error: error})
+        : 'authorization:github:success:' + JSON.stringify({token: token, provider: 'github'});
+      if (window.opener) {
+        window.opener.postMessage(msg, '*');
+        setTimeout(function() { window.close(); }, 1000);
+      }
+    </script>
+  </body></html>`);
 }
