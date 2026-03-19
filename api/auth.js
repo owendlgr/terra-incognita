@@ -41,7 +41,7 @@ module.exports = async function handler(req, res) {
         : 'authorization:github:success:' + JSON.stringify({token: token, provider: 'github'});
       if (window.opener) {
         window.opener.postMessage(msg, '*');
-        setTimeout(function() { window.close(); }, 1000);
+        setTimeout(function() { window.close(); }, 5000);
       }
     </script>
   </body></html>`);
