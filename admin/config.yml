@@ -25,17 +25,12 @@ collections:
           - { label: "Europe", value: "europe" }
           - { label: "Travel", value: "travel" }
           - { label: "Tech", value: "tech" }
-      - { label: "Kicker", name: "kicker", widget: "string", required: false, hint: "Short label e.g. 'Exclusive Investigation'" }
-      - { label: "Excerpt", name: "excerpt", widget: "text", hint: "2-3 sentence summary shown on article cards" }
+      - { label: "Kicker", name: "kicker", widget: "string", required: false }
+      - { label: "Excerpt", name: "excerpt", widget: "text" }
       - { label: "Cover Image", name: "cover_image", widget: "image", required: false }
       - { label: "Cover Image Caption", name: "cover_caption", widget: "string", required: false }
       - { label: "Body", name: "body", widget: "markdown" }
-      - label: "Tags"
-        name: "tags"
-        widget: "list"
-        required: false
-        hint: "Add tags like 'world', 'opinion', 'map' etc."
-      - { label: "Featured", name: "featured", widget: "boolean", default: false, hint: "Show as featured story on homepage" }
+      - { label: "Featured", name: "featured", widget: "boolean", default: false }
       - { label: "Reading Time (mins)", name: "read_time", widget: "number", required: false }
 
   - name: "gallery"
@@ -58,15 +53,4 @@ collections:
           - { label: "Landscape", value: "landscape" }
           - { label: "Map", value: "map" }
           - { label: "Street", value: "street" }
-      - { label: "Article Reference", name: "article_ref", widget: "string", required: false, hint: "Related article title (for maps)" }
-
-  - name: "settings"
-    label: "Site Settings"
-    files:
-      - label: "General"
-        name: "general"
-        file: "content/settings/general.json"
-        fields:
-          - { label: "Site Tagline", name: "tagline", widget: "string" }
-          - { label: "Featured Article Title", name: "featured_title", widget: "string" }
-          - { label: "Featured Article Dek", name: "featured_dek", widget: "text" }
+      - { label: "Article Reference", name: "article_ref", widget: "string", required: false }
