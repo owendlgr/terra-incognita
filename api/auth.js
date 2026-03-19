@@ -39,9 +39,13 @@ module.exports = async function handler(req, res) {
       var msg = error
         ? 'authorization:github:error:' + JSON.stringify({error: error})
         : 'authorization:github:success:' + JSON.stringify({token: token, provider: 'github'});
+      console.log('opener:', window.opener);
+      console.log('msg:', msg);
       if (window.opener) {
-        window.opener.postMessage(msg, '*');
+        window.opener.postMessage(msg, 'https://terra-incognita-sigma.vercel.app');
         setTimeout(function() { window.close(); }, 5000);
+      } else {
+        document.body.innerHTML += '<p>ERROR: window.opener is null</p>';
       }
     </script>
   </body></html>`);
