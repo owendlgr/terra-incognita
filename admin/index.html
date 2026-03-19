@@ -7,57 +7,6 @@
   <title>Terra Incognita · Admin</title>
 </head>
 <body>
-  <script>window.CMS_MANUAL_INIT = true;</script>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js" onload="initCMS()"></script>
-  <script>
-    function initCMS() { CMS.init({
-      config: {
-        backend: {
-          name: 'github',
-          repo: 'owendlgr/terra-incognita',
-          branch: 'main'
-        },
-        media_folder: 'images/uploads',
-        public_folder: '/images/uploads',
-        collections: [
-          {
-            name: 'articles',
-            label: 'Articles',
-            folder: 'content/articles',
-            create: true,
-            slug: '{{year}}-{{month}}-{{day}}-{{slug}}',
-            fields: [
-              { label: 'Title', name: 'title', widget: 'string' },
-              { label: 'Publish Date', name: 'date', widget: 'datetime' },
-              { label: 'Topic', name: 'topic', widget: 'select', options: ['world','middleeast','america','europe','travel','tech'] },
-              { label: 'Kicker', name: 'kicker', widget: 'string', required: false },
-              { label: 'Excerpt', name: 'excerpt', widget: 'text' },
-              { label: 'Cover Image', name: 'cover_image', widget: 'image', required: false },
-              { label: 'Cover Caption', name: 'cover_caption', widget: 'string', required: false },
-              { label: 'Body', name: 'body', widget: 'markdown' },
-              { label: 'Featured', name: 'featured', widget: 'boolean', default: false },
-              { label: 'Reading Time (mins)', name: 'read_time', widget: 'number', required: false }
-            ]
-          },
-          {
-            name: 'gallery',
-            label: 'Gallery Photos',
-            folder: 'content/gallery',
-            create: true,
-            slug: '{{year}}-{{month}}-{{day}}-{{slug}}',
-            fields: [
-              { label: 'Title', name: 'title', widget: 'string' },
-              { label: 'Date', name: 'date', widget: 'datetime' },
-              { label: 'Photo', name: 'photo', widget: 'image' },
-              { label: 'Caption', name: 'caption', widget: 'string' },
-              { label: 'Location', name: 'location', widget: 'string', required: false },
-              { label: 'Category', name: 'category', widget: 'select', options: ['portrait','documentary','landscape','map','street'] },
-              { label: 'Article Reference', name: 'article_ref', widget: 'string', required: false }
-            ]
-          }
-        ]
-      }
-    }); }
-  </script>
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 </body>
 </html>
