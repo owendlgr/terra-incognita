@@ -1499,7 +1499,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       <h3>Photography</h3>
       <p>I approach photography the same way I approach reporting — by getting close, staying patient, and letting the subject lead. I'm interested in documentary work that captures place and people honestly, without imposing a narrative from outside. I also study art and architecture, which shapes how I think about framing, light, and the built environment as a form of storytelling.</p>
       <h3>Contact &amp; Tips</h3>
-      <p>I read everything. If you have a tip, a story lead, a correction, or just want to reach out — email me at <a href="#" style="color:var(--green);" onclick="window.location.href='mai'+'lto:delling'+'erisaac'+'@gm'+'ail.com';return false;">dellingerisaac@gmail.com</a>. I'm also on Instagram at <a href="https://instagram.com/owen.dlgr" target="_blank" style="color:var(--green);">@owen.dlgr</a>.</p>
+      <p>I read everything. If you have a tip, a story lead, a correction, or just want to reach out — email me at <a href="#" style="color:var(--green);" onclick="window.location.href='mai'+'lto:delling'+'erisaac'+'@gm'+'ail.com';return false;"><span class="__cf_email__" data-cfemail="1f7b7a73737671787a6d766c7e7e7c5f78727e7673317c7072">[email&#160;protected]</span></a>. I'm also on Instagram at <a href="https://instagram.com/owen.dlgr" target="_blank" style="color:var(--green);">@owen.dlgr</a>.</p>
     </div>
 
     <div style="margin-top:3rem;padding-top:2rem;border-top:1px solid var(--divider);">
@@ -1784,7 +1784,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 <!-- ═══════════════════════════════════════════
      JS
 ═══════════════════════════════════════════ -->
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* MOBILE MENU */
 function toggleMenu() {
   const menu = document.getElementById('mobile-menu');
@@ -2472,10 +2472,7 @@ async function fetchGallery() {
 })();
 
 /* ── LIKES ── */
-function getLikes(key){return parseInt(localStorage.getItem('ti-likes-'+key)||'0');}
-function setLikes(key,n){localStorage.setItem('ti-likes-'+key,n);}
-function getUserLiked(key){return localStorage.getItem('ti-liked-'+key)==='1';}
-function setUserLiked(key,val){localStorage.setItem('ti-liked-'+key,val?'1':'0');}
+function getLikes(key){return parseInt(localStorage.getItem('ti-likes-'+kItem('ti-liked-'+key,val?'1':'0');}
 
 function toggleArticleLike(){
   const a=window.currentArticle;if(!a)return;
@@ -2539,4 +2536,11 @@ function sendContactMessage(){
     to_name:'Isaac',to_email:'dellingerisaac'+'@gmail.com',
     from_name:name,from_email:email,message:message
   }).then(()=>{
- 
+     document.getElementById('contact-form').style.opacity='.4';
+    document.getElementById('contact-status').style.display='block';
+  }).catch(()=>{alert('Message failed. Please email us directly.');});
+}
+</script>
+
+</body>
+</html>
