@@ -1,8 +1,19 @@
 {
   "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "script-src 'unsafe-eval' 'unsafe-inline' *"
+        }
+      ]
+    }
+  ],
   "rewrites": [
     {
-      "source": "/((?!admin|images).*)",
+      "source": "/((?!admin|api|images).*)",
       "destination": "/index.html"
     }
   ]
